@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "casual",
+  "version": "${version}",
+  "name": "Casual Championships Mod",
+  "description": "Minigames for Casual Championships",
+  "authors": [
+    "Sensei"
+  ],
+  "contact": {
+    "repo": "https://github.com/CasualUHC/uhc-mod.git"
+  },
+  "icon": "icon.png",
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "server": [
+      {
+        "adapter": "kotlin",
+        "value": "net.casual.championships.CasualMod"
+      }
+    ]
+  },
+  "mixins": [
+    "uhc.mixins.json"
+  ],
+  "accessWidener": "uhc.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.14.12",
+    "minecraft": "1.20.x",
+    "java": ">=17",
+    "fabric-language-kotlin": ">=1.9.0+kotlin.1.8.0"
+  }
+}
