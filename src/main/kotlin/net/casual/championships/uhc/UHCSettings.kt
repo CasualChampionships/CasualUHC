@@ -12,6 +12,8 @@ import net.casual.arcade.utils.TimeUtils.Minutes
 import net.casual.arcade.utils.TimeUtils.Seconds
 import net.casual.arcade.utils.TimeUtils.Ticks
 import net.casual.championships.common.minigame.CasualSettings
+import net.casual.championships.uhc.border.UHCBorderSize
+import net.casual.championships.uhc.border.UHCBorderStage
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.alchemy.Potions
 

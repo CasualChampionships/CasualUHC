@@ -1,4 +1,4 @@
-package net.casual.championships.uhc
+package net.casual.championships.uhc.border
 
 import net.minecraft.world.level.Level
 

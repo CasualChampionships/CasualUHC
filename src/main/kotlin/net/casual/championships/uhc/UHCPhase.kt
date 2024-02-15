@@ -1,5 +1,8 @@
 package net.casual.championships.uhc
 
+import net.casual.arcade.gui.sidebar.ArcadeSidebar
+import net.casual.arcade.gui.sidebar.SidebarSupplier
+import net.casual.arcade.gui.suppliers.ComponentSupplier
 import net.casual.arcade.level.VanillaDimension
 import net.casual.arcade.minigame.MinigamePhase
 import net.casual.arcade.minigame.task.impl.MinigameTask
@@ -25,6 +28,7 @@ import net.casual.arcade.utils.TimeUtils.Ticks
 import net.casual.championships.common.util.CommonComponents
 import net.casual.championships.common.task.GlowingBossBarTask
 import net.casual.championships.common.task.GracePeriodBossBarTask
+import net.casual.championships.common.util.CommonUI
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.phys.Vec2
@@ -93,14 +97,18 @@ enum class UHCPhase(
 
             minigame.teams.hideNameTags()
 
-            // minigame.ui.setTabDisplay(CasualMinigames.event.createTabDisplay())
+            minigame.ui.setTabDisplay(CommonUI.createTabDisplay())
 
-            for (tag in UHCUtils.createNameTags()) {
-                minigame.ui.addNameTag(tag)
-            }
+            minigame.ui.addNameTag(CommonUI.createPlayingHealthTag())
+            minigame.ui.addNameTag(CommonUI.createPlayingNameTag())
 
-            // TODO:
-            minigame.ui.setSidebar(UHCUtils.createSidebar(5))
+            val sidebar = ArcadeSidebar(ComponentSupplier.of(UHCComponents.CASUAL_UHC))
+            // TODO: Configure team sizes
+            CommonUI.addTeammates(sidebar, 5)
+            sidebar.addRow(SidebarSupplier.empty())
+            CommonUI.addBorderDistanceAndRadius(sidebar)
+            sidebar.addRow(SidebarSupplier.empty())
+            minigame.ui.setSidebar(sidebar)
         }
     },
     Grace(GRACE_ID) {

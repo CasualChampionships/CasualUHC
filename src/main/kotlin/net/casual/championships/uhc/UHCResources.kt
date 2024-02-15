@@ -1,7 +1,8 @@
-package net.casual.championships.uhc.resources
+package net.casual.championships.uhc
 
 import net.casual.arcade.minigame.MinigameResources
 import net.casual.arcade.resources.PackInfo
+import net.minecraft.server.level.ServerPlayer
 
 object UHCResources: MinigameResources {
     override fun getPacks(): Collection<PackInfo> {

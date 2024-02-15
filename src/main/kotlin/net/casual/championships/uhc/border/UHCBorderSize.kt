@@ -1,4 +1,4 @@
-package net.casual.championships.uhc
+package net.casual.championships.uhc.border
 
 enum class UHCBorderSize {
     START, END

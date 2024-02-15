@@ -7,28 +7,10 @@ import net.casual.championships.common.util.CommonComponents.generate
 import net.minecraft.network.chat.Component
 
 object UHCComponents {
-    val ICON_FONT = UHCMod.id("icons")
-
     val CASUAL_UHC get() = Component.literal("Casual UHC")
-
-    val PACK_MESSAGE by constant("uhc.pack.message")
-
-    val TAB_HOSTED by constant("uhc.tab.hosted")
 
     val COMMAND_NO_TEAM by constant("uhc.commands.error.noTeam")
     val COMMAND_POS = generate("uhc.commands.pos")
-
-    val LOBBY_WELCOME by constant("uhc.lobby.welcome")
-    val LOBBY_READY_QUESTION by constant("uhc.lobby.ready.question")
-    val LOBBY_YES by constant("uhc.lobby.ready.yes")
-    val LOBBY_NO by constant("uhc.lobby.ready.no")
-    val LOBBY_NOT_READY = generate("uhc.lobby.ready.notReady")
-    val LOBBY_IS_READY = generate("uhc.lobby.ready.isReady")
-    val LOBBY_READY_NOT_NOW by constant("uhc.lobby.ready.notNow")
-    val LOBBY_READY_NO_TEAM by constant("uhc.lobby.ready.noTeam")
-    val LOBBY_READY_ALREADY by constant("uhc.lobby.ready.alreadyReady")
-    val LOBBY_READY_ALL_READY by constant("uhc.lobby.allReady")
-    val LOBBY_GOOD_LUCK by constant("uhc.lobby.goodLuck")
     
     val ADVANCEMENT_ROOT by constant("uhc.advancements.root")
     val ADVANCEMENT_ROOT_DESC by constant("uhc.advancements.root.desc")
@@ -103,34 +85,6 @@ object UHCComponents {
     val BROADCAST_S_COMMAND by constant("uhc.broadcast.specCommand")
     val BROADCAST_PLAYER_HEADS by constant("uhc.broadcast.playerHeads")
     val BROADCAST_REMOVE_ME by constant("uhc.broadcast.joke")
-    
-    val MINESWEEPER_EXIT by constant("uhc.minesweeper.exit")
-    val MINESWEEPER_DESC_1 by constant("uhc.minesweeper.desc.1")
-    val MINESWEEPER_DESC_2 by constant("uhc.minesweeper.desc.2")
-    val MINESWEEPER_DESC_3 by constant("uhc.minesweeper.desc.3")
-    val MINESWEEPER_DESC_4 by constant("uhc.minesweeper.desc.4")
-    val MINESWEEPER_FLAGS by constant("uhc.minesweeper.flags")
-    val MINESWEEPER_MINE by constant("uhc.minesweeper.mine")
-    val MINESWEEPER_FLAG by constant("uhc.minesweeper.flag")
-    val MINESWEEPER_TIMER by constant("uhc.minesweeper.timer")
-    val MINESWEEPER_PLAY_AGAIN by constant("uhc.minesweeper.playAgain")
-    val MINESWEEPER_WON = generate("uhc.minesweeper.won")
-    val MINESWEEPER_LOST by constant("uhc.minesweeper.lost")
-    val MINESWEEPER_RECORD = generate("uhc.minesweeper.record")
-
-    val UHC_ELIMINATED = generate("uhc.game.eliminated")
-    val UHC_OUTSIDE_BORDER = generate("uhc.game.outsideBorder")
-    val UHC_NORTH by constant("uhc.game.north")
-    val UHC_NORTH_EAST by constant("uhc.game.northEast")
-    val UHC_EAST by constant("uhc.game.east")
-    val UHC_SOUTH_EAST by constant("uhc.game.southEast")
-    val UHC_SOUTH by constant("uhc.game.south")
-    val UHC_SOUTH_WEST by constant("uhc.game.southWest")
-    val UHC_WEST by constant("uhc.game.west")
-    val UHC_NORTH_WEST by constant("uhc.game.northWest")
-    val UHC_ADDED_TO_TEAM = generate("uhc.game.addedToTeam")
-    val UHC_GOLDEN_HEAD by constant("uhc.game.goldenHead")
-    val UHC_WON = generate("uhc.game.won")
 
     val SPECTATOR_NOT_SPECTATING by constant("uhc.spectator.notDead")
     val SPECTATOR_NOT_ONLINE = generate("uhc.spectator.notOnline")
@@ -139,18 +93,4 @@ object UHCComponents {
     val SPECTATOR_SPECTATORS by constant("uhc.spectator.spectators")
     val SPECTATOR_TEAMS by constant("uhc.spectator.teams")
     val SPECTATOR_NEXT by constant("uhc.spectator.next")
-
-    // val UHC_TEAM_GLOW = generateToggle("uhc.teamglow")
-    // val UHC_FULL_BRIGHT = generateToggle("uhc.fullbright")
-    // val UHC_DISPLAY = generateToggle("uhc.display")
-    // val UHC_DISPLAY_COORDS = generateToggle("uhc.display.coords")
-    // val UHC_DISPLAY_DIRECTION = generateToggle("uhc.display.direction")
-    // val UHC_DISPLAY_DISTANCE = generateToggle("uhc.display.distance")
-    // val UHC_DISPLAY_RADIUS = generateToggle("uhc.display.radius")
-    val UHC_TOGGLE_ENABLED by constant("uhc.toggle.enabled") { green() }
-    val UHC_TOGGLE_DISABLED by constant("uhc.toggle.disabled") { crimson() }
-
-    val SIDEBAR_TEAMMATES by constant("uhc.sidebar.teammates")
-
-    val TOOLTIP_HEAD by constant("uhc.tooltips.head")
 }

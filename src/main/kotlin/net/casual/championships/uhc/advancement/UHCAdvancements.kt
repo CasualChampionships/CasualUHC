@@ -3,8 +3,7 @@ package net.casual.championships.uhc.advancement
 import net.casual.arcade.advancements.AdvancementBuilder
 import net.casual.arcade.utils.ItemUtils.potion
 import net.casual.championships.uhc.UHCComponents
-import net.casual.championships.uhc.UHCUtils
-import net.casual.championships.uhc.UHCUtils.id
+import net.casual.championships.uhc.UHCMod.id
 import net.minecraft.advancements.AdvancementHolder
 import net.minecraft.advancements.AdvancementType
 import net.minecraft.resources.ResourceLocation

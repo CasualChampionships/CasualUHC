@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.FallingBlock
 class UHCAdvancementManager(
     private val uhc: UHCMinigame
 ): MinigameEventListener {
-    private val claimed = HashSet<RaceAdvancement>()
+    private val claimed = HashSet<UHCRaceAdvancement>()
 
     fun grantFinalAdvancements(winners: List<ServerPlayer>) {
         val alive = winners.filter { it.isSurvival }
@@ -73,7 +73,7 @@ class UHCAdvancementManager(
 
     fun deserialize(json: JsonObject) {
         for (claimed in json.array("claimed")) {
-            this.claimed.add(RaceAdvancement.valueOf(claimed.asString))
+            this.claimed.add(UHCRaceAdvancement.valueOf(claimed.asString))
         }
     }
 
@@ -98,7 +98,7 @@ class UHCAdvancementManager(
 
     @Listener(before = BORDER_FINISHED_ID, flags = HAS_PLAYER_PLAYING)
     private fun onPlayerDeath(event: PlayerDeathEvent) {
-        if (this.claimed.add(RaceAdvancement.Death)) {
+        if (this.claimed.add(UHCRaceAdvancement.Death)) {
             event.player.grantAdvancement(UHCAdvancements.EARLY_EXIT)
         }
 
@@ -106,7 +106,7 @@ class UHCAdvancementManager(
             event.player.grantAdvancement(UHCAdvancements.SKILL_ISSUE)
         }
 
-        if (this.claimed.add(RaceAdvancement.Kill)) {
+        if (this.claimed.add(UHCRaceAdvancement.Kill)) {
             val killer = event.player.getKillCreditWith(event.source)
             if (killer is ServerPlayer) {
                 killer.grantAdvancement(UHCAdvancements.FIRST_BLOOD)
@@ -132,7 +132,7 @@ class UHCAdvancementManager(
 
     @Listener(before = BORDER_FINISHED_ID, flags = HAS_PLAYER_PLAYING)
     private fun onPlayerCraft(event: PlayerCraftEvent) {
-        if (event.stack.`is`(Items.CRAFTING_TABLE) && this.claimed.add(RaceAdvancement.Craft)) {
+        if (event.stack.`is`(Items.CRAFTING_TABLE) && this.claimed.add(UHCRaceAdvancement.Craft)) {
             event.player.grantAdvancement(UHCAdvancements.WORLD_RECORD_PACE)
         }
     }
@@ -183,6 +183,11 @@ class UHCAdvancementManager(
         if (event.state.`is`(Blocks.SWEET_BERRY_BUSH)) {
             event.player.grantAdvancement(UHCAdvancements.EMBARRASSING)
         }
+    }
+
+    @Listener(flags = HAS_PLAYER_PLAYING)
+    private fun onPlayerAdvancement(event: PlayerAdvancementEvent) {
+        event.announce = event.announce && UHCAdvancements.isRegistered(event.advancement) && this.uhc.isPlaying(event.player)
     }
 
     private class PlayerAttacker(

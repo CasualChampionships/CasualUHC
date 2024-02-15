@@ -27,6 +27,7 @@ import net.casual.arcade.utils.ComponentUtils.lime
 import net.casual.arcade.utils.ComponentUtils.literal
 import net.casual.arcade.utils.ComponentUtils.withShiftedDown4Font
 import net.casual.arcade.utils.ComponentUtils.withShiftedDown5Font
+import net.casual.arcade.utils.ItemUtils.isOf
 import net.casual.arcade.utils.JsonUtils.booleanOrDefault
 import net.casual.arcade.utils.JsonUtils.obj
 import net.casual.arcade.utils.JsonUtils.set
@@ -54,17 +55,20 @@ import net.casual.arcade.utils.StatUtils.increment
 import net.casual.arcade.utils.TeamUtils.getOnlineCount
 import net.casual.arcade.utils.TeamUtils.getOnlinePlayers
 import net.casual.arcade.utils.TimeUtils.Seconds
-import net.casual.championships.common.gui.ActiveBossBar
+import net.casual.championships.common.event.border.BorderPortalWithinBoundsEvent
+import net.casual.championships.common.ui.ActiveBossBar
 import net.casual.championships.common.recipes.GoldenHeadRecipe
 import net.casual.championships.common.task.GlowingBossBarTask
 import net.casual.championships.common.task.GracePeriodBossBarTask
 import net.casual.championships.common.util.CommonComponents
 import net.casual.championships.common.util.CommonTags
 import net.casual.championships.common.util.HeadUtils
+import net.casual.championships.events.border.BorderEntityPortalEntryPointEvent
 import net.casual.championships.uhc.UHCPhase.*
 import net.casual.championships.uhc.advancement.UHCAdvancementManager
 import net.casual.championships.uhc.advancement.UHCAdvancements
-import net.casual.championships.uhc.resources.UHCResources
+import net.casual.championships.uhc.border.UHCBorderSize
+import net.casual.championships.uhc.border.UHCBorderStage
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.EntityArgument
@@ -79,6 +83,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.level.TicketType
 import net.minecraft.sounds.SoundEvents
+import net.minecraft.util.Mth
 import net.minecraft.util.Unit
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
@@ -229,8 +234,8 @@ class UHCMinigame(
     }
 
     private fun createUHCCommand(): LiteralArgumentBuilder<CommandSourceStack> {
-        return Commands.literal("uhc").requiresAdminOrPermission().then(
-            Commands.literal("player").then(
+        return Commands.literal("uhc").then(
+            Commands.literal("player").requiresAdminOrPermission().then(
                 Commands.argument("player", EntityArgument.player()).then(
                     Commands.literal("add").then(
                         Commands.argument("team", TeamArgument.team()).then(
@@ -242,7 +247,7 @@ class UHCMinigame(
                 )
             )
         ).then(
-            Commands.literal("border").then(
+            Commands.literal("border").requiresAdminOrPermission().then(
                 Commands.literal("start").executes(this::startWorldBorders)
             )
         )
@@ -257,7 +262,7 @@ class UHCMinigame(
 
         val server = context.source.server
         server.scoreboard.addPlayerToTeam(target.scoreboardName, team)
-        target.sendSystemMessage(UHCComponents.UHC_ADDED_TO_TEAM.generate(team.formattedDisplayName))
+        target.sendSystemMessage(CommonComponents.ADDED_TO_TEAM_MESSAGE.generate(team.formattedDisplayName))
 
         this.setAsPlaying(target)
 
@@ -301,35 +306,17 @@ class UHCMinigame(
         }
     }
 
-    // TODO:
-    // @Listener
-    // private fun onMobCategorySpawn(event: MobCategorySpawnEvent) {
-    //     val (_, category, _, state) = event
-    //     val i = category.maxInstancesPerChunk * state.spawnableChunkCount / 289
-    //     if (state.mobCategoryCounts.getInt(category) >= i * PerformanceUtils.MOBCAP_MULTIPLIER) {
-    //         event.cancel()
-    //     }
-    // }
-
-    // @Listener
-    // private fun onEntityStartTracking(event: EntityStartTrackingEvent) {
-    //     val entity = event.entity
-    //     if (entity is Mob && PerformanceUtils.isEntityAIDisabled(entity)) {
-    //         entity.isNoAi = true
-    //     }
-    // }
-
     @Listener
     private fun onBrewingStandBrew(event: BrewingStandBrewEvent) {
         if (!this.settings.opPotions) {
             val ingredient = event.entity.getItem(3)
-            if (ingredient.`is`(Items.GLOWSTONE_DUST) || ingredient.`is`(Items.GLISTERING_MELON_SLICE)) {
+            if (ingredient.isOf(Items.GLOWSTONE_DUST) || ingredient.isOf(Items.GLISTERING_MELON_SLICE)) {
                 event.cancel()
             }
         }
     }
 
-    /*@Listener
+    @Listener
     private fun onBorderEntityPortalEntryPointEvent(event: BorderEntityPortalEntryPointEvent) {
         val (border, _, _, pos) = event
 
@@ -370,7 +357,7 @@ class UHCMinigame(
                 && pos.z >= border.minZ + margin
                 && pos.z + 1 <= border.maxZ - margin
         )
-    }*/
+    }
 
     @Listener(before = BORDER_FINISHED_ID)
     private fun onPlayerTick(event: PlayerTickEvent) {
@@ -550,7 +537,7 @@ class UHCMinigame(
 
         if (this.uptime % 200 == 0) {
             player.sendTitle(Component.empty())
-            player.sendSubtitle(UHCComponents.UHC_OUTSIDE_BORDER.generate(CommonComponents.direction(direction).lime()))
+            player.sendSubtitle(CommonComponents.INSIDE_BORDER_MESSAGE.generate(CommonComponents.direction(direction).lime()))
         }
     }
 
@@ -679,8 +666,7 @@ class UHCMinigame(
         val team = player.team
         team?.nameTagVisibility = Team.Visibility.NEVER
 
-        // TODO:
-        // flags.set(PlayerFlag.Participating, true)
+        this.tags.add(player, CommonTags.HAS_PARTICIPATED)
         this.tags.add(player, CommonTags.HAS_TEAM_GLOW)
 
         player.addEffect(

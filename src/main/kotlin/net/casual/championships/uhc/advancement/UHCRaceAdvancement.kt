@@ -1,5 +1,5 @@
 package net.casual.championships.uhc.advancement
 
-enum class RaceAdvancement {
+enum class UHCRaceAdvancement {
     Craft, Death, Kill
 }

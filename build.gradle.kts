@@ -35,7 +35,9 @@ dependencies {
     modImplementation("com.github.CasualChampionships:arcade:${property("arcade_version")}")
     modImplementation("xyz.nucleoid:fantasy:${property("fantasy_version")}")
     modImplementation("com.github.senseiwells:ServerReplay:${property("server_replay_version")}")
+    modImplementation("eu.pb4:polymer-resource-pack:${property("polymer_version")}")
 
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
 
     implementation(project(mapOf("path" to ":minigames:common")))
