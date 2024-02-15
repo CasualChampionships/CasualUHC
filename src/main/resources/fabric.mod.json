@@ -10,7 +10,6 @@
   "contact": {
     "repo": "https://github.com/CasualUHC/uhc-mod.git"
   },
-  "icon": "icon.png",
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
@@ -22,9 +21,8 @@
     ]
   },
   "mixins": [
-    "uhc.mixins.json"
+
   ],
-  "accessWidener": "uhc.accesswidener",
   "depends": {
     "fabricloader": ">=0.14.12",
     "minecraft": "1.20.x",

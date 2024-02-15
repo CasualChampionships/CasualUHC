@@ -13,19 +13,12 @@ import net.casual.arcade.utils.JsonUtils.toJsonStringArray
 import net.casual.arcade.utils.PlayerUtils.getKillCreditWith
 import net.casual.arcade.utils.PlayerUtils.grantAdvancement
 import net.casual.arcade.utils.PlayerUtils.isSurvival
+import net.casual.arcade.utils.StatUtils.increment
 import net.casual.arcade.utils.TimeUtils.Seconds
-import net.casual.championships.CasualMod
-import net.casual.championships.extensions.PlayerFlag
-import net.casual.championships.extensions.PlayerFlagsExtension.Companion.flags
-import net.casual.championships.extensions.PlayerUHCExtension.Companion.uhc
-import net.casual.championships.minigame.uhc.BORDER_FINISHED_ID
-import net.casual.championships.minigame.uhc.GRACE_ID
-import net.casual.championships.minigame.uhc.UHCMinigame
-import net.casual.championships.screen.MinesweeperScreen
 import net.casual.championships.uhc.BORDER_FINISHED_ID
 import net.casual.championships.uhc.GRACE_ID
 import net.casual.championships.uhc.UHCMinigame
-import net.casual.championships.util.CasualPlayerUtils.isMessageGlobal
+import net.casual.championships.uhc.UHCStats
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.item.Items
@@ -109,10 +102,6 @@ class UHCAdvancementManager(
             event.player.grantAdvancement(UHCAdvancements.EARLY_EXIT)
         }
 
-        if (event.player.containerMenu is MinesweeperScreen) {
-            event.player.grantAdvancement(UHCAdvancements.DISTRACTED)
-        }
-
         if (event.source.`is`(DamageTypes.OUTSIDE_BORDER)) {
             event.player.grantAdvancement(UHCAdvancements.SKILL_ISSUE)
         }
@@ -158,12 +147,14 @@ class UHCAdvancementManager(
     @Listener(before = BORDER_FINISHED_ID, flags = HAS_PLAYER_PLAYING)
     private fun onPlayerTick(event: PlayerTickEvent) {
         val player = event.player
+        val stat = this.uhc.stats.getOrCreateStat(player, UHCStats.HALF_HEART_TIME)
         if (player.gameMode.isSurvival && player.health <= 1.0F) {
-            if (++player.uhc.halfHealthTicks == 1200) {
+            stat.increment()
+            if (stat.value == 1200) {
                 player.grantAdvancement(UHCAdvancements.ON_THE_EDGE)
             }
         } else {
-            player.uhc.halfHealthTicks = 0
+            stat.modify { 0 }
         }
     }
 

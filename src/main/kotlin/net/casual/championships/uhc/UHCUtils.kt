@@ -9,23 +9,19 @@ import net.casual.arcade.utils.ComponentUtils
 import net.casual.arcade.utils.ComponentUtils.bold
 import net.casual.arcade.utils.ComponentUtils.gold
 import net.casual.arcade.utils.ComponentUtils.literal
-import net.casual.championships.uhc.ui.BorderDistanceRow
-import net.casual.championships.uhc.ui.TeammateRow
+import net.casual.championships.common.gui.BorderDistanceRow
+import net.casual.championships.common.gui.TeammateRow
+import net.casual.championships.common.util.CommonComponents
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
 
 object UHCUtils {
-    fun id(path: String): ResourceLocation {
-        return ResourceLocation(UHCMod.ID, path)
-    }
-
     fun createNameTags(): List<ArcadeNameTag> {
         val name = ArcadeNameTag(
             { it.displayName!! },
             { a, _ -> !a.isInvisible }
         )
         val health = ArcadeNameTag(
-            { String.format("%.1f ", it.health / 2).literal().append(UHCComponents.ICON_HEART) },
+            { String.format("%.1f ", it.health / 2).literal().append(CommonComponents.HARDCORE_HEART_BITMAP) },
             { a, b -> !a.isInvisible && (b.isSpectator || b.team == a.team) }
         )
         return listOf(health, name)
@@ -43,7 +39,7 @@ object UHCUtils {
         sidebar.addRow(SidebarSupplier.empty())
         sidebar.addRow(BorderDistanceRow(buffer))
         sidebar.addRow { player ->
-            val display = Component.empty().append(buffer).append(UHCComponents.UHC_WB_RADIUS)
+            val display = Component.empty().append(buffer).append(CommonComponents.BORDER_RADIUS_MESSAGE)
             val score = (player.level().worldBorder.size / 2.0).toInt().toString().literal().append(buffer)
             SidebarComponent.withCustomScore(display, score)
         }

@@ -16,21 +16,19 @@ import net.casual.arcade.utils.ComponentUtils.red
 import net.casual.arcade.utils.GameRuleUtils.resetToDefault
 import net.casual.arcade.utils.GameRuleUtils.set
 import net.casual.arcade.utils.PlayerUtils
-import net.casual.arcade.utils.PlayerUtils.revokeAdvancement
+import net.casual.arcade.utils.PlayerUtils.revokeAllAdvancements
 import net.casual.arcade.utils.PlayerUtils.sendSound
 import net.casual.arcade.utils.PlayerUtils.sendTitle
 import net.casual.arcade.utils.TeamUtils.getOnlinePlayers
 import net.casual.arcade.utils.TimeUtils.Minutes
 import net.casual.arcade.utils.TimeUtils.Ticks
-import net.casual.championships.managers.DataManager
-import net.casual.championships.minigame.CasualMinigames
-import net.casual.championships.minigame.uhc.task.GlowingBossBarTask
-import net.casual.championships.minigame.uhc.task.GracePeriodBossBarTask
-import net.casual.championships.util.Config
-import net.casual.championships.util.Texts
+import net.casual.championships.common.util.CommonComponents
+import net.casual.championships.common.task.GlowingBossBarTask
+import net.casual.championships.common.task.GracePeriodBossBarTask
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.phys.Vec2
+import kotlin.math.roundToInt
 
 const val INITIALIZING_ID = "initializing"
 const val GRACE_ID = "grace"
@@ -48,13 +46,9 @@ enum class UHCPhase(
             minigame.getLevels().forEach { it.dayTime = 0 }
             minigame.resetWorldBorders()
             for (player in minigame.getAllPlayers()) {
-                player.sendSystemMessage(Texts.UHC_GRACE_FIRST.gold())
                 player.sendSound(SoundEvents.NOTE_BLOCK_PLING.value())
 
-                // TODO: maybe better?
-                for (advancement in minigame.server.advancements.allAdvancements) {
-                    player.revokeAdvancement(advancement)
-                }
+                player.revokeAllAdvancements()
             }
 
             val stage = minigame.settings.borderStage
@@ -99,13 +93,14 @@ enum class UHCPhase(
 
             minigame.teams.hideNameTags()
 
-            minigame.ui.setTabDisplay(CasualMinigames.event.createTabDisplay())
+            // minigame.ui.setTabDisplay(CasualMinigames.event.createTabDisplay())
 
             for (tag in UHCUtils.createNameTags()) {
                 minigame.ui.addNameTag(tag)
             }
 
-            minigame.ui.setSidebar(UHCUtils.createSidebar(CasualMinigames.event.config.teamSize))
+            // TODO:
+            minigame.ui.setSidebar(UHCUtils.createSidebar(5))
         }
     },
     Grace(GRACE_ID) {
@@ -118,10 +113,13 @@ enum class UHCPhase(
                 // .withRemainingDuration(duration + 1.Seconds - minigame.uptime.Ticks)
                 .then(PhaseChangeTask(minigame, BorderMoving))
             minigame.scheduler.schedulePhasedCancellable(duration, task).runOnCancel()
+
+            val minutes = duration.toMinutes().roundToInt()
+            minigame.chat.broadcast(CommonComponents.BORDER_INITIAL_GRACE_MESSAGE.generate(minutes).gold())
         }
 
         override fun end(minigame: UHCMinigame) {
-            val message = Texts.UHC_GRACE_OVER.red().bold()
+            val message = CommonComponents.BORDER_GRACE_OVER_MESSAGE.red().bold()
             for (player in minigame.getAllPlayers()) {
                 player.sendSystemMessage(message)
                 player.sendSound(SoundEvents.ENDER_DRAGON_GROWL)
@@ -167,11 +165,8 @@ enum class UHCPhase(
 
             for (player in minigame.getAllPlayers()) {
                 player.setGlowingTag(false)
-                player.sendTitle(Texts.UHC_WON.generate(team.name).withStyle(team.color))
+                player.sendTitle(CommonComponents.GAME_WON_MESSAGE.generate(team.name).withStyle(team.color))
             }
-
-            // TODO:
-            DataManager.database.incrementTeamWin(team)
 
             // TODO: Better winning screen
             val winTask = MinigameTask(minigame) {
@@ -191,7 +186,7 @@ enum class UHCPhase(
             minigame.scheduler.schedulePhasedInLoop(0, 4, 100, Ticks, winTask)
 
             minigame.scheduler.schedulePhased(20, MinecraftTimeUnit.Seconds, MinigameTask(minigame) {
-                CasualMinigames.event.returnToLobby(it.server)
+                minigame.close()
             })
         }
     }

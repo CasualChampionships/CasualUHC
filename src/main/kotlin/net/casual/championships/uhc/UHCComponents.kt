@@ -2,18 +2,12 @@ package net.casual.championships.uhc
 
 import net.casual.arcade.utils.ComponentUtils.crimson
 import net.casual.arcade.utils.ComponentUtils.green
-import net.minecraft.core.Direction
-import net.minecraft.core.Direction8
+import net.casual.championships.common.util.CommonComponents.constant
+import net.casual.championships.common.util.CommonComponents.generate
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.Component.translatable
-import net.minecraft.network.chat.MutableComponent
-import net.minecraft.network.chat.Style
-import net.minecraft.network.chat.contents.TranslatableContents
-import net.minecraft.util.Mth
-import kotlin.reflect.KProperty
 
 object UHCComponents {
-    val ICON_FONT = CasualUtils.id("icons")
+    val ICON_FONT = UHCMod.id("icons")
 
     val CASUAL_UHC get() = Component.literal("Casual UHC")
 
@@ -124,12 +118,6 @@ object UHCComponents {
     val MINESWEEPER_LOST by constant("uhc.minesweeper.lost")
     val MINESWEEPER_RECORD = generate("uhc.minesweeper.record")
 
-    val UHC_DIRECTION by constant("uhc.game.direction")
-    val UHC_DISTANCE_TO_WB by constant("uhc.game.distance")
-    val UHC_WB_RADIUS by constant("uhc.game.radius")
-    val UHC_GRACE_FIRST by constant("uhc.game.grace.first")
-    val UHC_GRACE_GENERIC = generate("uhc.game.grace.generic")
-    val UHC_GRACE_OVER by constant("uhc.game.grace.over")
     val UHC_ELIMINATED = generate("uhc.game.eliminated")
     val UHC_OUTSIDE_BORDER = generate("uhc.game.outsideBorder")
     val UHC_NORTH by constant("uhc.game.north")
@@ -152,174 +140,17 @@ object UHCComponents {
     val SPECTATOR_TEAMS by constant("uhc.spectator.teams")
     val SPECTATOR_NEXT by constant("uhc.spectator.next")
 
-    val UHC_TEAM_GLOW = generateToggle("uhc.teamglow")
-    val UHC_FULL_BRIGHT = generateToggle("uhc.fullbright")
-    val UHC_DISPLAY = generateToggle("uhc.display")
-    val UHC_DISPLAY_COORDS = generateToggle("uhc.display.coords")
-    val UHC_DISPLAY_DIRECTION = generateToggle("uhc.display.direction")
-    val UHC_DISPLAY_DISTANCE = generateToggle("uhc.display.distance")
-    val UHC_DISPLAY_RADIUS = generateToggle("uhc.display.radius")
+    // val UHC_TEAM_GLOW = generateToggle("uhc.teamglow")
+    // val UHC_FULL_BRIGHT = generateToggle("uhc.fullbright")
+    // val UHC_DISPLAY = generateToggle("uhc.display")
+    // val UHC_DISPLAY_COORDS = generateToggle("uhc.display.coords")
+    // val UHC_DISPLAY_DIRECTION = generateToggle("uhc.display.direction")
+    // val UHC_DISPLAY_DISTANCE = generateToggle("uhc.display.distance")
+    // val UHC_DISPLAY_RADIUS = generateToggle("uhc.display.radius")
     val UHC_TOGGLE_ENABLED by constant("uhc.toggle.enabled") { green() }
     val UHC_TOGGLE_DISABLED by constant("uhc.toggle.disabled") { crimson() }
 
     val SIDEBAR_TEAMMATES by constant("uhc.sidebar.teammates")
-    val SIDEBAR_KILLS = generate("uhc.sidebar.kills")
 
     val TOOLTIP_HEAD by constant("uhc.tooltips.head")
-
-    val ICON_HEART by constant("uhc.icons.heart") { iconed() }
-    val ICON_NO_CONNECTION by constant("uhc.icons.noConnection") { iconed() }
-    val ICON_CROSS by constant("uhc.icons.cross") { iconed() }
-    val ICON_UHC by constant("uhc.icons.uhc") { iconed() }
-    val ICON_WIDE_BACKGROUND by constant("uhc.icons.wideBackground") { iconed() }
-    val ICON_BACKGROUND by constant("uhc.icons.background") { iconed() }
-    val ICON_SHORT_BACKGROUND by constant("uhc.icons.shortBackground") { iconed() }
-    val ICON_KILLS by constant("uhc.icons.kills") { iconed() }
-    val ICON_PLAYERS by constant("uhc.icons.players") { iconed() }
-    val ICON_YES by constant("uhc.icons.yes") { iconed() }
-    val ICON_NO by constant("uhc.icons.no") { iconed() }
-
-    val BOSSBAR_STARTING = generateBossbar("uhc.bossbar.starting", ICON_WIDE_BACKGROUND)
-    val BOSSBAR_STARTING_SOON = generateBossbar("uhc.bossbar.startingSoon", ICON_WIDE_BACKGROUND)
-    val BOSSBAR_ELAPSED = generateBossbar("uhc.bossbar.elapsed", ICON_WIDE_BACKGROUND)
-    val BOSSBAR_GRACE = generateBossbar("uhc.bossbar.grace", ICON_BACKGROUND)
-    val BOSSBAR_GLOWING = generateBossbar("uhc.bossbar.glowing", ICON_BACKGROUND)
-
-    fun literal(literal: String): MutableComponent {
-        return Component.literal(literal)
-    }
-
-    fun space(top: Int, bottom: Int): MutableComponent {
-        return translatable("space.$top/$bottom").withStyle { it.withFont(SPACES_FONT) }
-    }
-
-    fun space(space: Int = 4): MutableComponent {
-        val clamped = Mth.clamp(space, -8192, 8192)
-        return translatable("space.$clamped").withStyle { it.withFont(SPACES_FONT) }
-    }
-
-    fun offset(offset: Int, component: Component): MutableComponent {
-        val clamped = Mth.clamp(offset, -8192, 8192)
-        return translatable("offset.${clamped}", arrayOf(component)).withStyle { it.withFont(SPACES_FONT) }
-    }
-
-    private fun constant(key: String, modifier: (MutableComponent.() -> Unit)? = null): Constant {
-        return Constant(key, modifier)
-    }
-
-    fun generate(key: String): ComponentGenerator {
-        return ComponentGenerator {
-            translatable(key, *it)
-        }
-    }
-
-    fun generateToggle(key: String): ToggleComponentGenerators {
-        return ToggleComponentGenerators { translatable(key, toggle(it)) }
-    }
-
-    fun toggle(boolean: Boolean): MutableComponent {
-        return if (boolean) UHC_TOGGLE_ENABLED else UHC_TOGGLE_DISABLED
-    }
-
-    fun generateBossbar(key: String, background: MutableComponent): ComponentGenerator {
-        return ComponentGenerator { args ->
-            Component.empty()
-                .append(translatable("$key.space.1").spaced())
-                .append(background.shadowless())
-                .append(translatable("$key.space.2").spaced())
-                .append(translatable(key, *args))
-        }
-    }
-
-    fun direction(direction: Direction): MutableComponent {
-        return when (direction) {
-            Direction.NORTH -> UHC_NORTH
-            Direction.EAST -> UHC_EAST
-            Direction.SOUTH -> UHC_SOUTH
-            Direction.WEST -> UHC_WEST
-            else -> Component.literal(direction.getName())
-        }
-    }
-
-    fun direction(direction: Direction8): MutableComponent {
-        return when (direction) {
-            Direction8.NORTH -> UHC_NORTH
-            Direction8.NORTH_EAST -> UHC_NORTH_EAST
-            Direction8.EAST -> UHC_EAST
-            Direction8.SOUTH_EAST -> UHC_SOUTH_EAST
-            Direction8.SOUTH -> UHC_SOUTH
-            Direction8.SOUTH_WEST -> UHC_SOUTH_WEST
-            Direction8.WEST -> UHC_WEST
-            Direction8.NORTH_WEST -> UHC_NORTH_WEST
-        }
-    }
-
-    fun negativeWidthOf(component: Component): MutableComponent {
-        val key = getTranslationKeyOf(component)
-        return translatable("$key.negativeWidth").spaced()
-    }
-
-    fun getTranslationKeyOf(component: Component): String {
-        val contents = component.contents
-        if (contents !is TranslatableContents) {
-            throw IllegalStateException()
-        }
-        return contents.key
-    }
-
-    fun MutableComponent.monospaced(): MutableComponent {
-        return this.withStyle { it.withFont(MOZART_FONT) }
-    }
-    
-    fun MutableComponent.spaced(): MutableComponent {
-        return this.withStyle { it.withFont(SPACES_FONT) }
-    }
-
-    fun MutableComponent.iconed(): MutableComponent {
-        return this.withStyle { it.withFont(ICON_FONT) }
-    }
-
-    fun MutableComponent.regular(): MutableComponent {
-        return this.withStyle { it.withFont(Style.DEFAULT_FONT) }
-    }
-
-    fun MutableComponent.regularShiftedDown1(): MutableComponent {
-        return this.withStyle { it.withFont(DEFAULT_SHIFTED_DOWN_1) }
-    }
-
-    fun MutableComponent.regularShiftedDown2(): MutableComponent {
-        return this.withStyle { it.withFont(DEFAULT_SHIFTED_DOWN_2) }
-    }
-
-    fun MutableComponent.regularShiftedDown3(): MutableComponent {
-        return this.withStyle { it.withFont(DEFAULT_SHIFTED_DOWN_3) }
-    }
-
-    fun MutableComponent.regularShiftedDown4(): MutableComponent {
-        return this.withStyle { it.withFont(DEFAULT_SHIFTED_DOWN_4) }
-    }
-
-    fun MutableComponent.regularShiftedDown5(): MutableComponent {
-        return this.withStyle { it.withFont(DEFAULT_SHIFTED_DOWN_5) }
-    }
-
-    fun MutableComponent.shadowless(): MutableComponent {
-        return this.withStyle { it.withColor(0x4E5C24) }
-    }
-
-    fun interface ComponentGenerator {
-        fun generate(vararg args: Any?): MutableComponent
-    }
-
-    fun interface ToggleComponentGenerators {
-        fun generate(boolean: Boolean): MutableComponent
-    }
-    
-    private class Constant(private val key: String, val consumer: (MutableComponent.() -> Unit)?) {
-        operator fun getValue(any: Any, property: KProperty<*>): MutableComponent {
-            val component = translatable(this.key)
-            this.consumer?.invoke(component)
-            return component
-        }
-    }
 }
