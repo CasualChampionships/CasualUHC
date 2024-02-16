@@ -114,7 +114,7 @@ class UHCMinigame(
     }
     private var bordersMoving = false
 
-    override val id = UHCMod.id("uhc_minigame")
+    override val id = ID
 
     val uhcAdvancements = UHCAdvancementManager(this)
 
@@ -250,6 +250,10 @@ class UHCMinigame(
             Commands.literal("border").requiresAdminOrPermission().then(
                 Commands.literal("start").executes(this::startWorldBorders)
             )
+        ).then(
+            Commands.literal("fullbright").executes(this::toggleFullbright)
+        ).then(
+            Commands.literal("teamglow").executes(this::toggleTeamGlow)
         )
     }
 
@@ -290,6 +294,36 @@ class UHCMinigame(
     private fun startWorldBorders(context: CommandContext<CommandSourceStack>): Int {
         this.startWorldBorders()
         return context.source.success("Successfully started world borders")
+    }
+
+    private fun toggleFullbright(context: CommandContext<CommandSourceStack>): Int {
+        val player = context.source.playerOrException
+        val toggle = if (this.effects.hasFullbright(player)) {
+            this.effects.removeFullbright(player)
+            CommonComponents.DISABLED_MESSAGE
+        } else {
+            this.effects.addFullbright(player)
+            CommonComponents.ENABLED_MESSAGE
+        }
+        return context.source.success(CommonComponents.TOGGLE_FULLBRIGHT.generate(toggle))
+    }
+
+    private fun toggleTeamGlow(context: CommandContext<CommandSourceStack>): Int {
+        val player = context.source.playerOrException
+        val toggle = if (this.tags.has(player, CommonTags.HAS_TEAM_GLOW)) {
+            this.tags.remove(player, CommonTags.HAS_TEAM_GLOW)
+            CommonComponents.DISABLED_MESSAGE
+        } else {
+            this.tags.add(player, CommonTags.HAS_TEAM_GLOW)
+            CommonComponents.ENABLED_MESSAGE
+        }
+        val team = player.team
+        if (team != null) {
+            for (teammate in team.getOnlinePlayers()) {
+                this.effects.forceUpdate(teammate, player)
+            }
+        }
+        return context.source.success(CommonComponents.TOGGLE_TEAMGLOW.generate(toggle))
     }
 
     @Listener(before = BORDER_FINISHED_ID)
@@ -686,6 +720,7 @@ class UHCMinigame(
 
     companion object {
         private val FAKE_BORDER = WorldBorder()
+        val ID = UHCMod.id("uhc_minigame")
 
         fun of(
             server: MinecraftServer,

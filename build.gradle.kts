@@ -40,7 +40,7 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
 
-    implementation(project(mapOf("path" to ":minigames:common")))
+    implementation(project(mapOf("path" to ":minigames:common", "configuration" to "namedElements")))
 }
 
 tasks {

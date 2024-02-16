@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "id": "casual",
+  "id": "casual_uhc",
   "version": "${version}",
-  "name": "Casual Championships Mod",
-  "description": "Minigames for Casual Championships",
+  "name": "CasualUHC",
+  "description": "This is the implementation of the UHC minigame for CasualChampionship.",
   "authors": [
     "Sensei"
   ],
   "contact": {
-    "repo": "https://github.com/CasualUHC/uhc-mod.git"
+    "repo": "https://github.com/CasualChampionships/CasualUHC"
   },
   "license": "MIT",
   "environment": "*",
@@ -16,7 +16,7 @@
     "server": [
       {
         "adapter": "kotlin",
-        "value": "net.casual.championships.CasualMod"
+        "value": "net.casual.championships.uhc.UHCMod"
       }
     ]
   },
