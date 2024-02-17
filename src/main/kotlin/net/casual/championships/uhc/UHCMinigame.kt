@@ -55,11 +55,13 @@ import net.casual.arcade.utils.StatUtils.increment
 import net.casual.arcade.utils.TeamUtils.getOnlineCount
 import net.casual.arcade.utils.TeamUtils.getOnlinePlayers
 import net.casual.arcade.utils.TimeUtils.Seconds
+import net.casual.arcade.utils.impl.Location
 import net.casual.championships.common.event.border.BorderPortalWithinBoundsEvent
-import net.casual.championships.common.ui.ActiveBossBar
 import net.casual.championships.common.recipes.GoldenHeadRecipe
 import net.casual.championships.common.task.GlowingBossBarTask
 import net.casual.championships.common.task.GracePeriodBossBarTask
+import net.casual.championships.common.ui.ActiveBossBar
+import net.casual.championships.common.util.CommonCommands
 import net.casual.championships.common.util.CommonComponents
 import net.casual.championships.common.util.CommonTags
 import net.casual.championships.common.util.HeadUtils
@@ -77,7 +79,8 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.chat.Component
-import net.minecraft.network.protocol.game.*
+import net.minecraft.network.protocol.game.ClientboundInitializeBorderPacket
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -129,7 +132,6 @@ class UHCMinigame(
         this.addTaskFactory(GracePeriodBossBarTask.cast())
 
         this.ui.addBossbar(ActiveBossBar(this))
-        this.addResources(UHCResources)
         this.effects.setGlowingPredicate(this::shouldObserveeGlow)
 
         // Spawn chunks
@@ -251,9 +253,13 @@ class UHCMinigame(
                 Commands.literal("start").executes(this::startWorldBorders)
             )
         ).then(
-            Commands.literal("fullbright").executes(this::toggleFullbright)
+            Commands.literal("fullbright").executes { CommonCommands.toggleFullbright(this, it) }
         ).then(
-            Commands.literal("teamglow").executes(this::toggleTeamGlow)
+            Commands.literal("teamglow").executes { CommonCommands.toggleTeamGlow(this, it) }
+        ).then(
+            Commands.literal("spectate").executes { CommonCommands.openSpectatingScreen(this, it) }
+        ).then(
+            Commands.literal("pos").executes { CommonCommands.broadcastPositionToTeammates(this, it) }
         )
     }
 
@@ -294,36 +300,6 @@ class UHCMinigame(
     private fun startWorldBorders(context: CommandContext<CommandSourceStack>): Int {
         this.startWorldBorders()
         return context.source.success("Successfully started world borders")
-    }
-
-    private fun toggleFullbright(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.playerOrException
-        val toggle = if (this.effects.hasFullbright(player)) {
-            this.effects.removeFullbright(player)
-            CommonComponents.DISABLED_MESSAGE
-        } else {
-            this.effects.addFullbright(player)
-            CommonComponents.ENABLED_MESSAGE
-        }
-        return context.source.success(CommonComponents.TOGGLE_FULLBRIGHT.generate(toggle))
-    }
-
-    private fun toggleTeamGlow(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.playerOrException
-        val toggle = if (this.tags.has(player, CommonTags.HAS_TEAM_GLOW)) {
-            this.tags.remove(player, CommonTags.HAS_TEAM_GLOW)
-            CommonComponents.DISABLED_MESSAGE
-        } else {
-            this.tags.add(player, CommonTags.HAS_TEAM_GLOW)
-            CommonComponents.ENABLED_MESSAGE
-        }
-        val team = player.team
-        if (team != null) {
-            for (teammate in team.getOnlinePlayers()) {
-                this.effects.forceUpdate(teammate, player)
-            }
-        }
-        return context.source.success(CommonComponents.TOGGLE_TEAMGLOW.generate(toggle))
     }
 
     @Listener(before = BORDER_FINISHED_ID)
@@ -491,6 +467,10 @@ class UHCMinigame(
 
     @Listener
     private fun onMinigameClose(event: MinigameCloseEvent) {
+        // Unload chunks
+        this.overworld.chunkSource.removeTicketsOnClosing()
+        this.overworld.chunkSource.tick({ true }, false)
+
         // TODO:
         // DataManager.database.update(this)
 
@@ -505,6 +485,10 @@ class UHCMinigame(
 
         this.effects.addFullbright(player)
         this.tags.remove(player, CommonTags.HAS_TEAM_GLOW)
+
+        if (!this.hasLevel(player.serverLevel())) {
+            player.teleportTo(Location.of(0.0, 128.0, 0.0, level = this.overworld))
+        }
     }
 
     private fun shouldObserveeGlow(observee: Entity, observer: ServerPlayer): Boolean {

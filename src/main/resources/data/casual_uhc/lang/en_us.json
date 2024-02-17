@@ -76,13 +76,5 @@
   "uhc.broadcast.playerHeads": "When a player dies they will drop their head, you can consume this for some buffs.\nYou can enhance the buffs by surrounding it in gold ingots in a crafting table",
   "uhc.broadcast.joke": "Hello World. Testing... Foobar. // TODO: remove this message before starting UHC",
   "uhc.broadcast.pos": "You can broadcast your position to your team with the /pos command, teammates can then click the coordinates to look in your direction",
-  "uhc.broadcast.outsideBorder": "When you are outside the border an arrow will guide you back to safety. The world border will invert, allowing you to break and place blocks",
-
-  "uhc.spectator.notDead": "You need to be dead to spectate!",
-  "uhc.spectator.notOnline": "%s is not online!",
-  "uhc.spectator.screen": "Spectator Screen",
-  "uhc.spectator.previous": "Previous",
-  "uhc.spectator.spectators": "Spectators",
-  "uhc.spectator.teams": "Teams",
-  "uhc.spectator.next": "Next"
+  "uhc.broadcast.outsideBorder": "When you are outside the border an arrow will guide you back to safety. The world border will invert, allowing you to break and place blocks"
 }

@@ -14,12 +14,13 @@ object UHCMod: DedicatedServerModInitializer {
     val logger: Logger = LoggerFactory.getLogger("CasualUHC")
 
     val UHC_PACK = NamedResourcePackCreator.named("uhc") {
+        addAssetSource(MOD_ID)
         addLangsFromData(MOD_ID)
         packDescription = "Resources for CasualChampionships UHC minigame".literal()
     }
 
     override fun onInitializeServer() {
-        // TODO: Add hardcore hearts to resource pack
+
     }
 
     fun id(path: String): ResourceLocation {

@@ -102,7 +102,7 @@ enum class UHCPhase(
             minigame.ui.addNameTag(CommonUI.createPlayingHealthTag())
             minigame.ui.addNameTag(CommonUI.createPlayingNameTag())
 
-            val sidebar = ArcadeSidebar(ComponentSupplier.of(UHCComponents.CASUAL_UHC))
+            val sidebar = ArcadeSidebar(ComponentSupplier.of(UHCComponents.CASUAL_UHC.gold().bold()))
             // TODO: Configure team sizes
             CommonUI.addTeammates(sidebar, 5)
             sidebar.addRow(SidebarSupplier.empty())
@@ -118,7 +118,6 @@ enum class UHCPhase(
             val duration = minigame.settings.gracePeriod + 19.Ticks
             val task = GracePeriodBossBarTask(minigame)
                 .withDuration(duration)
-                // .withRemainingDuration(duration + 1.Seconds - minigame.uptime.Ticks)
                 .then(PhaseChangeTask(minigame, BorderMoving))
             minigame.scheduler.schedulePhasedCancellable(duration, task).runOnCancel()
 
@@ -194,7 +193,7 @@ enum class UHCPhase(
             minigame.scheduler.schedulePhasedInLoop(0, 4, 100, Ticks, winTask)
 
             minigame.scheduler.schedulePhased(20, MinecraftTimeUnit.Seconds, MinigameTask(minigame) {
-                minigame.close()
+                minigame.complete()
             })
         }
     }

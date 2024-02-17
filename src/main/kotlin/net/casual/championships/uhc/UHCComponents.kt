@@ -1,17 +1,11 @@
 package net.casual.championships.uhc
 
-import net.casual.arcade.utils.ComponentUtils.crimson
-import net.casual.arcade.utils.ComponentUtils.green
 import net.casual.championships.common.util.CommonComponents.constant
-import net.casual.championships.common.util.CommonComponents.generate
 import net.minecraft.network.chat.Component
 
 object UHCComponents {
     val CASUAL_UHC get() = Component.literal("Casual UHC")
 
-    val COMMAND_NO_TEAM by constant("uhc.commands.error.noTeam")
-    val COMMAND_POS = generate("uhc.commands.pos")
-    
     val ADVANCEMENT_ROOT by constant("uhc.advancements.root")
     val ADVANCEMENT_ROOT_DESC by constant("uhc.advancements.root.desc")
     val ADVANCEMENT_FIRST_BLOOD by constant("uhc.advancements.firstBlood")
@@ -85,12 +79,4 @@ object UHCComponents {
     val BROADCAST_S_COMMAND by constant("uhc.broadcast.specCommand")
     val BROADCAST_PLAYER_HEADS by constant("uhc.broadcast.playerHeads")
     val BROADCAST_REMOVE_ME by constant("uhc.broadcast.joke")
-
-    val SPECTATOR_NOT_SPECTATING by constant("uhc.spectator.notDead")
-    val SPECTATOR_NOT_ONLINE = generate("uhc.spectator.notOnline")
-    val SPECTATOR_SCREEN by constant("uhc.spectator.screen")
-    val SPECTATOR_PREVIOUS by constant("uhc.spectator.previous")
-    val SPECTATOR_SPECTATORS by constant("uhc.spectator.spectators")
-    val SPECTATOR_TEAMS by constant("uhc.spectator.teams")
-    val SPECTATOR_NEXT by constant("uhc.spectator.next")
 }

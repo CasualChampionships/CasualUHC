@@ -15,12 +15,14 @@ import net.casual.arcade.utils.PlayerUtils.grantAdvancement
 import net.casual.arcade.utils.PlayerUtils.isSurvival
 import net.casual.arcade.utils.StatUtils.increment
 import net.casual.arcade.utils.TimeUtils.Seconds
+import net.casual.championships.common.event.PlayerCheatEvent
 import net.casual.championships.uhc.BORDER_FINISHED_ID
 import net.casual.championships.uhc.GRACE_ID
 import net.casual.championships.uhc.UHCMinigame
 import net.casual.championships.uhc.UHCStats
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.damagesource.DamageTypes
+import net.minecraft.world.entity.monster.warden.Warden
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.FallingBlock
@@ -106,11 +108,12 @@ class UHCAdvancementManager(
             event.player.grantAdvancement(UHCAdvancements.SKILL_ISSUE)
         }
 
-        if (this.claimed.add(UHCRaceAdvancement.Kill)) {
-            val killer = event.player.getKillCreditWith(event.source)
-            if (killer is ServerPlayer) {
-                killer.grantAdvancement(UHCAdvancements.FIRST_BLOOD)
-            }
+        val killer = event.player.getKillCreditWith(event.source)
+        if (this.claimed.add(UHCRaceAdvancement.Kill) && killer is ServerPlayer) {
+            killer.grantAdvancement(UHCAdvancements.FIRST_BLOOD)
+        }
+        if (killer is Warden) {
+            event.player.grantAdvancement(UHCAdvancements.BEAR_CARED)
         }
     }
 
@@ -188,6 +191,11 @@ class UHCAdvancementManager(
     @Listener(flags = HAS_PLAYER_PLAYING)
     private fun onPlayerAdvancement(event: PlayerAdvancementEvent) {
         event.announce = event.announce && UHCAdvancements.isRegistered(event.advancement) && this.uhc.isPlaying(event.player)
+    }
+
+    @Listener(flags = HAS_PLAYER_PLAYING)
+    private fun onPlayerCheat(event: PlayerCheatEvent) {
+        event.player.grantAdvancement(UHCAdvancements.BUSTED)
     }
 
     private class PlayerAttacker(
