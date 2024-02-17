@@ -47,7 +47,7 @@ enum class UHCPhase(
         override fun start(minigame: UHCMinigame) {
             minigame.settings.canPvp.set(false)
             minigame.settings.tickFreezeOnPause.set(true)
-            minigame.getLevels().forEach { it.dayTime = 0 }
+            minigame.levels.all().forEach { it.dayTime = 0 }
             minigame.resetWorldBorders()
             for (player in minigame.getAllPlayers()) {
                 player.sendSound(SoundEvents.NOTE_BLOCK_PLING.value())

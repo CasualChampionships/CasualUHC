@@ -124,9 +124,10 @@ class UHCMinigame(
     override val settings = UHCSettings(this)
 
     init {
-        this.addLevel(overworld)
-        this.addLevel(nether)
-        this.addLevel(end)
+        this.levels.add(overworld)
+        this.levels.add(nether)
+        this.levels.add(end)
+        this.levels.spawn = overworld
 
         this.addTaskFactory(GlowingBossBarTask.cast())
         this.addTaskFactory(GracePeriodBossBarTask.cast())
@@ -441,6 +442,8 @@ class UHCMinigame(
         if (this.phase > Initializing) {
             this.makeSpectator(event.player)
         }
+
+        event.player.team?.nameTagVisibility = Team.Visibility.NEVER
     }
 
     @Listener(priority = 0)
@@ -486,7 +489,7 @@ class UHCMinigame(
         this.effects.addFullbright(player)
         this.tags.remove(player, CommonTags.HAS_TEAM_GLOW)
 
-        if (!this.hasLevel(player.serverLevel())) {
+        if (!this.levels.has(player.serverLevel())) {
             player.teleportTo(Location.of(0.0, 128.0, 0.0, level = this.overworld))
         }
     }
@@ -545,7 +548,7 @@ class UHCMinigame(
 
         val scale = level.dimensionType().coordinateScale
 
-        FAKE_BORDER.size = border.size - 1
+        FAKE_BORDER.size = border.size + 0.5
         FAKE_BORDER.lerpSizeBetween(FAKE_BORDER.size, FAKE_BORDER.size - 0.5, Long.MAX_VALUE)
         // Foolish Minecraft uses scale for the centre, even on the client,
         // so we need to reproduce.
@@ -628,7 +631,7 @@ class UHCMinigame(
 
     private fun initialiseBorderTracker() {
         this.tracker.addListener(this)
-        for (level in this.getLevels()) {
+        for (level in this.levels.all()) {
             this.tracker.addLevelBorder(level)
         }
 
@@ -712,9 +715,9 @@ class UHCMinigame(
             end: RuntimeWorldHandle
         ): UHCMinigame {
             return UHCMinigame(server, overworld.asWorld(), nether.asWorld(), end.asWorld()).apply {
-                addLevel(overworld)
-                addLevel(nether)
-                addLevel(end)
+                levels.add(overworld)
+                levels.add(nether)
+                levels.add(end)
             }
         }
     }
