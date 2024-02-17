@@ -545,8 +545,7 @@ class UHCMinigame(
 
         val scale = level.dimensionType().coordinateScale
 
-        // We send
-        FAKE_BORDER.size = border.size - 0.5
+        FAKE_BORDER.size = border.size - 1
         FAKE_BORDER.lerpSizeBetween(FAKE_BORDER.size, FAKE_BORDER.size - 0.5, Long.MAX_VALUE)
         // Foolish Minecraft uses scale for the centre, even on the client,
         // so we need to reproduce.
