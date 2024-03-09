@@ -1,10 +1,15 @@
 package net.casual.championships.uhc
 
+import net.casual.arcade.utils.ComponentUtils.withFont
 import net.casual.championships.common.util.CommonComponents.constant
 import net.minecraft.network.chat.Component
 
 object UHCComponents {
+    private val UHC_FONT = UHCMod.id("bitmap_font")
+
     val CASUAL_UHC get() = Component.literal("Casual UHC")
+
+    val TITLE get() = Component.literal("\ue000").withFont(UHC_FONT)
 
     val ADVANCEMENT_ROOT by constant("uhc.advancements.root")
     val ADVANCEMENT_ROOT_DESC by constant("uhc.advancements.root.desc")

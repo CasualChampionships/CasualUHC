@@ -16,6 +16,7 @@ import net.casual.arcade.utils.ComponentUtils.bold
 import net.casual.arcade.utils.ComponentUtils.gold
 import net.casual.arcade.utils.ComponentUtils.literal
 import net.casual.arcade.utils.ComponentUtils.red
+import net.casual.arcade.utils.ComponentUtils.withFont
 import net.casual.arcade.utils.GameRuleUtils.resetToDefault
 import net.casual.arcade.utils.GameRuleUtils.set
 import net.casual.arcade.utils.PlayerUtils
@@ -102,7 +103,7 @@ enum class UHCPhase(
             minigame.ui.addNameTag(CommonUI.createPlayingHealthTag())
             minigame.ui.addNameTag(CommonUI.createPlayingNameTag())
 
-            val sidebar = ArcadeSidebar(ComponentSupplier.of(UHCComponents.CASUAL_UHC.gold().bold()))
+            val sidebar = ArcadeSidebar(ComponentSupplier.of(UHCComponents.TITLE))
             // TODO: Configure team sizes
             CommonUI.addTeammates(sidebar, 5)
             sidebar.addRow(SidebarSupplier.empty())
